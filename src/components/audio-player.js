@@ -18,9 +18,7 @@ const formatTime = (time) => {
   return ret;
 }
 
-const AudioPlayer = ({src, transcript}) => {
-  // Create a play button that toggles play and pause
-  // Create an elapse time and total time
+const AudioPlayer = ({src, transcript}) => {  
   // Create a fast-forward and rewind 15 seconds button
   // create a scrubber
   // create a playback rate button
@@ -28,10 +26,11 @@ const AudioPlayer = ({src, transcript}) => {
   // mute toggle
   const audioRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false);
+  // Create an elapse time and total time
   const [duration, setDuration] = useState(0)
   const [mediaTime, setMediaTime] = useState(0)
 
-
+  // Create a play button that toggles play and pause
   const togglePlaying = () => {
     setIsPlaying(!isPlaying)
     isPlaying ? audioRef.current.pause() : audioRef.current.play()
@@ -45,18 +44,60 @@ const AudioPlayer = ({src, transcript}) => {
     setMediaTime(audioRef.current.currentTime)
   }
 
+  const onScrubberChange = (e) => {
+    const newTime = e.target.value
+    setMediaTime(newTime)
+    audioRef.current.currentTime = newTime
+  }
+  const onRewind = () => {
+    const { currentTime } = audioRef.current
+    const newTime = Math.max(currentTime - 15, 0)
+    setMediaTime(newTime)
+    audioRef.current.currentTime = newTime
+  }
+
+  const onFastForward = () => {
+    const { currentTime } = audioRef.current
+    const newTime = Math.min(currentTime + 15, duration) 
+    setMediaTime(newTime)
+    audioRef.current.currentTime = newTime
+  }
+  const rates = [0.75, 1, 1.5, 2];
+
   console.log(audioRef);
+
+  const changeRate = (rate) => {
+    audioRef.current.defaultPlaybackRate = rate;
+  }
   
   return ( 
     <>
     <div className='audio' onClick={togglePlaying}>
       <button>{isPlaying ? 'pause' : 'play'}</button><br/>
       <span className='elapsed'>Elapsed total: {formatTime(mediaTime)}</span><br/>
-      <span className='duration'>total Duration: {formatTime(duration)}</span>
+      <span className='duration'>total Duration: {formatTime(duration)}</span><br/>
+      <label htmlFor="time-scrubber">Time Scrubber</label>
+      <input
+        id='time-scrubber'
+        onChange={onScrubberChange}
+        type='range'
+        value={mediaTime}
+        min={0}
+        max={duration}
+      />
+      <button onClick={onRewind}>Rewind 15 sec</button>
+      <button onClick={onFastForward}>Fast-forward 15 sec</button>
+      {rates.map((rate, i) => (
+        <button key={i} onClick={() => changeRate(rate)}>
+          {rate}x
+        </button>
+      ))}
     </div>
       <audio
         onLoadedMetadata={onLoadedMetadata}
         onTimeUpdate={onTimeUpdate}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         ref={audioRef} 
         src={src} 
         controls/>
