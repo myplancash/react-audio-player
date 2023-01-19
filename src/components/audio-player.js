@@ -65,33 +65,13 @@ const AudioPlayer = ({src, transcript}) => {
   const rates = [0.75, 1, 1.5, 2];
 
   console.log(audioRef);
-
-  const changeRate = (rate) => {
-    audioRef.current.defaultPlaybackRate = rate;
-  }
   
   return ( 
     <>
     <div className='audio' onClick={togglePlaying}>
       <button>{isPlaying ? 'pause' : 'play'}</button><br/>
       <span className='elapsed'>Elapsed total: {formatTime(mediaTime)}</span><br/>
-      <span className='duration'>total Duration: {formatTime(duration)}</span><br/>
-      <label htmlFor="time-scrubber">Time Scrubber</label>
-      <input
-        id='time-scrubber'
-        onChange={onScrubberChange}
-        type='range'
-        value={mediaTime}
-        min={0}
-        max={duration}
-      />
-      <button onClick={onRewind}>Rewind 15 sec</button>
-      <button onClick={onFastForward}>Fast-forward 15 sec</button>
-      {rates.map((rate, i) => (
-        <button key={i} onClick={() => changeRate(rate)}>
-          {rate}x
-        </button>
-      ))}
+      <span className='duration'>total Duration: {formatTime(duration)}</span>
     </div>
       <audio
         onLoadedMetadata={onLoadedMetadata}
