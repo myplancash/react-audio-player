@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'
+import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaUndoAlt, FaRedoAlt } from 'react-icons/fa'
 
 const formatTime = (time) => {
   // Hours, minutes and seconds
@@ -32,7 +32,7 @@ const AudioPlayer = ({src, transcript}) => {
   const [duration, setDuration] = useState(0)
   const [mediaTime, setMediaTime] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
-  const [ volume, setVolume] = useState(1)
+  const [volume, setVolume] = useState(1)
   
 
   // Create a play button that toggles play and pause
@@ -94,13 +94,11 @@ const AudioPlayer = ({src, transcript}) => {
     setVolume(newVolume)
     audioRef.current.volume = newVolume 
   }
-
-
   
   return ( 
     <>
     <div className='audio' onClick={togglePlaying}>
-      <button style={{padding: '1rem', margin:'auto 0'}}>
+      <button>
         {isPlaying ? (
         <>
           <span className='visually-hidden'>Pause</span>
@@ -124,8 +122,19 @@ const AudioPlayer = ({src, transcript}) => {
         min={0} 
         max={duration} 
       /> <br/>
-      <button onClick={onRewind}>15 Rewind</button>
-      <button onClick={onFastForward}>15 forward</button>
+      
+      {/* Redo and Rewind Buttons */}
+      <button aria-label='Rewind 15 seconds' onClick={onRewind}>
+        <FaUndoAlt aria-hidden='true'/>
+        <span>15s</span>
+      </button>
+
+      <button arial-label='Redo 15 seconds' onClick={onFastForward}>
+        <FaRedoAlt aria-hidden="true" onClick={onFastForward} />
+        <span>15s</span>
+      </button>
+      
+      {/* Map over the rates */}
       {rates.map((rate) => (
         <button key={rate} onClick={() => onRateChange(rate)}>{rate}x</button>
       ))}
@@ -133,13 +142,13 @@ const AudioPlayer = ({src, transcript}) => {
       <button onClick={onMuted}>{isMuted ? 
       (
         <>
-        <span className='visually-hidden'>Unmuted</span>
-        <FaVolumeMute aria-hidden='true'/>
+          <span className='visually-hidden'>Unmuted</span>
+          <FaVolumeMute aria-hidden='true'/>
         </>
       ) : (
         <>
-        <span className='visually-hidden'>mute</span>
-        <FaVolumeUp aria-hidden='true'/>        
+          <span className='visually-hidden'>mute</span>
+          <FaVolumeUp aria-hidden='true'/>        
         </>
 
       )}
