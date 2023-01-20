@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'
 
 const formatTime = (time) => {
   // Hours, minutes and seconds
@@ -18,6 +19,7 @@ const formatTime = (time) => {
   return ret;
 }
 
+
 const AudioPlayer = ({src, transcript}) => {  
   // Create a fast-forward and rewind 15 seconds button
   // create a scrubber
@@ -29,7 +31,9 @@ const AudioPlayer = ({src, transcript}) => {
   // Create an elapse time and total time
   const [duration, setDuration] = useState(0)
   const [mediaTime, setMediaTime] = useState(0)
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(false)
+  const [ volume, setVolume] = useState(1)
+  
 
   // Create a play button that toggles play and pause
   const togglePlaying = () => {
@@ -64,13 +68,11 @@ const AudioPlayer = ({src, transcript}) => {
     audioRef.current.currentTime = newTime;
   }
 
-  const rates = [0,75, 1, 1.5, 2];
-
+  const rates = [0.75, 1, 1.5, 2];
 
   const onRateChange = (rate) => {
     audioRef.current.playbackRate = rate;
   }
-
 
   const onMuted = () => {
     setIsMuted(!isMuted)
@@ -78,22 +80,41 @@ const AudioPlayer = ({src, transcript}) => {
   }
 
   const onVolumeChange = () => {
-    if(audioRef.current.muted) {
+    if(audioRef.current.muted || audioRef.current.volume === 0) {
       setIsMuted(true)
-    } else if (isMuted) {
+    } else if (!audioRef.current.muted) {
       setIsMuted(false)
+      setVolume(audioRef.current.volume)
     }
   }
 
+  const onVolumeScrubberChange = (event) => {
+    //to be more safe we set Number on whatever is the value:
+    const newVolume = Number(event.target.value);
+    setVolume(newVolume)
+    audioRef.current.volume = newVolume 
+  }
 
 
   
   return ( 
     <>
     <div className='audio' onClick={togglePlaying}>
-      <button>{isPlaying ? 'pause' : 'play'}</button><br/>
+      <button style={{padding: '1rem', margin:'auto 0'}}>
+        {isPlaying ? (
+        <>
+          <span className='visually-hidden'>Pause</span>
+          <FaPause aria-hidden='true'/> 
+        </>
+        ) : (
+        <> 
+          <span className='visually-hidden'>Play</span>
+          <FaPlay aria-hidden='true'/>
+        </>
+        )} 
+      </button><br/>
       <span className='elapsed'>Elapsed total: {formatTime(mediaTime)}</span><br/>
-      <span className='duration'>total Duration: {formatTime(duration)}</span><br/>
+      <span className='duration'>total Duration: {formatTime(duration)}</span>
       <label htmlFor="time-scrubber">scrubber</label>
       <input 
         type="range" 
@@ -108,7 +129,23 @@ const AudioPlayer = ({src, transcript}) => {
       {rates.map((rate) => (
         <button key={rate} onClick={() => onRateChange(rate)}>{rate}x</button>
       ))}
-      <button onClick={onMuted}>{isMuted ? 'Unmuted' : 'Mute' }</button>
+
+      <button onClick={onMuted}>{isMuted ? 
+      (
+        <>
+        <span className='visually-hidden'>Unmuted</span>
+        <FaVolumeMute aria-hidden='true'/>
+        </>
+      ) : (
+        <>
+        <span className='visually-hidden'>mute</span>
+        <FaVolumeUp aria-hidden='true'/>        
+        </>
+
+      )}
+      </button><br/>
+      <label htmlFor="volume-scrubber">Volume</label>
+      <input id='volume-scrubber' type="range" step={0.1} min={0} max={1} value={isMuted ? 0 : volume} onChange={onVolumeScrubberChange} />
     </div>
       <audio
         onLoadedMetadata={onLoadedMetadata}
@@ -118,8 +155,11 @@ const AudioPlayer = ({src, transcript}) => {
         ref={audioRef}
         onVolumeChange={onVolumeChange}
         src={src} 
-        controls/>
+        controls
+      />
+        
       <div>{transcript}</div>
+      
     </>
   )
 }
