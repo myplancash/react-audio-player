@@ -1,25 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaUndoAlt, FaRedoAlt } from 'react-icons/fa'
-
-const formatTime = (time) => {
-  // Hours, minutes and seconds
-  const hrs = Math.floor(~~(time / 3600)); // eslint-disable-line
-  const mins = Math.floor(~~((time % 3600) / 60)); // eslint-disable-line
-  const secs = Math.floor(time % 60);
-
-  // Output like "1:01" or "4:03:59" or "123:03:59"
-  let ret = '';
-
-  if (hrs > 0) {
-    ret += `${hrs}:${mins < 10 ? '0' : ''}`;
-  }
-
-  ret += `${mins}:${secs < 10 ? '0' : ''}`;
-  ret += `${secs}`;
-  return ret;
-}
-
-
+import { formatTime, formatHumanReadTime } from '../helpers/formatTime';
+;
 const AudioPlayer = ({src, transcript}) => {  
   // Create a fast-forward and rewind 15 seconds button
   // create a scrubber
@@ -69,6 +51,7 @@ const AudioPlayer = ({src, transcript}) => {
   }
 
   const rates = [0.75, 1, 1.5, 2];
+  formatHumanReadTime(1000);
 
   const onRateChange = (rate) => {
     audioRef.current.playbackRate = rate;
@@ -110,18 +93,19 @@ const AudioPlayer = ({src, transcript}) => {
           <FaPlay aria-hidden='true'/>
         </>
         )} 
-      </button><br/>
-      <span className='elapsed'>Elapsed total: {formatTime(mediaTime)}</span><br/>
-      <span className='duration'>total Duration: {formatTime(duration)}</span>
+      </button>
+      <span className='elapsed'>Elapsed total: {formatTime(mediaTime)}</span>
+      <span className='duration'>Total Duration: {formatTime(duration)}</span>
       <label htmlFor="time-scrubber">scrubber</label>
       <input 
         type="range" 
         id='time-scrubber' 
         value={mediaTime} 
         onChange={onScrubberChange} 
-        min={0} 
+        min={0}
         max={duration} 
-      /> <br/>
+        aria-valuetext={formatHumanReadTime(mediaTime)}
+      /> 
       
       {/* Redo and Rewind Buttons */}
       <button aria-label='Rewind 15 seconds' onClick={onRewind}>
@@ -152,7 +136,7 @@ const AudioPlayer = ({src, transcript}) => {
         </>
 
       )}
-      </button><br/>
+      </button>
       <label htmlFor="volume-scrubber">Volume</label>
       <input id='volume-scrubber' type="range" step={0.1} min={0} max={1} value={isMuted ? 0 : volume} onChange={onVolumeScrubberChange} />
     </div>
