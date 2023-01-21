@@ -81,7 +81,7 @@ const AudioPlayer = ({src, transcript}) => {
   return ( 
     <>
     <div className='audio' onClick={togglePlaying}>
-      <button>
+      <button style={{ padding: '1rem'}}>
         {isPlaying ? (
         <>
           <span className='visually-hidden'>Pause</span>

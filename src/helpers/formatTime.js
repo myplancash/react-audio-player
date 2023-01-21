@@ -17,25 +17,24 @@ export const formatTime = (time) => {
 }
 
 export const formatHumanReadTime = (time) => {
-  const formattedTime = formatTime(time)
-  const timeArray = formattedTime.split(':')
-  console.log(timeArray);
+  const newTime = formatTime(time)
+  const timeArray = newTime.split(":").map((time) => parseFloat(time));
 
   let string = "";
   let minutes;
   let seconds;
-  
-  if(timeArray[0] > 2) {
-    string += `${timeArray[0]} ${timeArray[0] === 1 ? 'hour' : 'hours' }}`;
-    minutes += timeArray[1];
-    seconds += timeArray[2];
+
+  if(timeArray.length > 2) {
+    string += `${timeArray[0]} ${timeArray[0] > 1 ? 'hour' : 'hours'}}, `
+    minutes = timeArray[1];
+    seconds = timeArray[2]
   } else {
-    minutes += timeArray[0];
-    seconds += timeArray[1];
+    minutes = timeArray[0];
+    seconds = timeArray[1];
   }
 
-  string += `${minutes} ${minutes === 1 ? "minute" : "minutes"}`
-  string += `${seconds } ${seconds === 1 ? "seconds" : "seconds"}`
+  string += `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}, `
+  string += `${seconds} ${seconds === 1 ? 'second' : 'seconds'}`
 
-  return string 
+  return string;
 }
