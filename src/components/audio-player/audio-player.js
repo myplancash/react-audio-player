@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaUndoAlt, FaRedoAlt } from 'react-icons/fa'
-import { formatTime, formatHumanReadTime } from '../helpers/formatTime';
+import { formatTime, formatHumanReadTime } from '../../helpers/formatTime';
+import DropdownMenu from '../dropdown-menu/dropdown-menu';
 ;
 const AudioPlayer = ({src, transcript}) => {  
   // Create a fast-forward and rewind 15 seconds button
@@ -15,6 +16,7 @@ const AudioPlayer = ({src, transcript}) => {
   const [mediaTime, setMediaTime] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(1)
+  const [playbackRate, setPlaybackRate] = useState(1)
   
 
   // Create a play button that toggles play and pause
@@ -53,10 +55,12 @@ const AudioPlayer = ({src, transcript}) => {
   const rates = [0.75, 1, 1.5, 2];
   formatHumanReadTime(1000);
 
-  const onRateChange = (rate) => {
-    audioRef.current.playbackRate = rate;
+  const changeRate = (rate) => {
+    setPlaybackRate(rate)
+    audioRef.current.playbackRate = rate
   }
 
+  console.log(audioRef);
   const onMuted = () => {
     setIsMuted(!isMuted)
     audioRef.current.muted = !isMuted
@@ -78,6 +82,13 @@ const AudioPlayer = ({src, transcript}) => {
     audioRef.current.volume = newVolume 
   }
   
+  const buttonText = (
+    <>
+      <span className='visually-hidden'>Playback Rates</span>
+      <span>{playbackRate}x</span>
+    </>
+  )
+
   return ( 
     <>
     <div className='audio' onClick={togglePlaying}>
@@ -108,22 +119,35 @@ const AudioPlayer = ({src, transcript}) => {
       /> 
       
       {/* Redo and Rewind Buttons */}
-      <button aria-label='Rewind 15 seconds' onClick={onRewind}>
+      <button 
+        aria-label='Rewind 15 seconds' 
+        onClick={onRewind}
+        className='audio__rewind-button'
+      >
         <FaUndoAlt aria-hidden='true'/>
-        <span>15s</span>
+        <span className='rewind--fifteen'>15s</span>
       </button>
 
-      <button arial-label='Redo 15 seconds' onClick={onFastForward}>
+      <button 
+        arial-label='Redo 15 seconds' 
+        onClick={onFastForward}
+        className='audio__fast-forward-button'
+      >
         <FaRedoAlt aria-hidden="true" onClick={onFastForward} />
-        <span>15s</span>
+        <span className='fast-forward--fifteen'>15s</span>
       </button>
       
       {/* Map over the rates */}
-      {rates.map((rate) => (
-        <button key={rate} onClick={() => onRateChange(rate)}>{rate}x</button>
-      ))}
-
-      <button onClick={onMuted}>{isMuted ? 
+      <DropdownMenu
+        className='audio__playback-wrapper'
+        buttonClass='audio__playback-toggle'
+        menuClass='audio__rates-wrapper'
+        rates={rates}
+        onRatesClick={changeRate}
+        buttonText={buttonText}
+      />
+      
+      <button className='audio__mute-button' onClick={onMuted}>{isMuted ? 
       (
         <>
           <span className='visually-hidden'>Unmuted</span>
