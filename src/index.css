@@ -20,14 +20,3 @@ code {
   white-space: nowrap;
   width: 1px;
 }
-
-
-.audio {
-  border: 1px solid #070606;
-  border-radius: 5px;
-  padding: 1rem;
-  gap: 15px;
-  align-items: space-between;
-  display: flex;
-  justify-content: center
-}

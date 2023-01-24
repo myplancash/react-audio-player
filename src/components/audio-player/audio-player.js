@@ -1,8 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { FaPlay, FaPause, FaVolumeMute, FaVolumeUp, FaUndoAlt, FaRedoAlt } from 'react-icons/fa'
+import {
+  FaPlayCircle,
+  FaPauseCircle,
+  FaVolumeMute,
+  FaVolumeUp,
+  FaRedoAlt,
+  FaUndoAlt,
+} from "react-icons/fa";
+
 import { formatTime, formatHumanReadTime } from '../../helpers/formatTime';
 import DropdownMenu from '../dropdown-menu/dropdown-menu';
-;
+import './audio-player.css';
 const AudioPlayer = ({src, transcript}) => {  
   // Create a fast-forward and rewind 15 seconds button
   // create a scrubber
@@ -91,17 +99,17 @@ const AudioPlayer = ({src, transcript}) => {
 
   return ( 
     <>
-    <div className='audio' onClick={togglePlaying}>
-      <button style={{ padding: '1rem'}}>
+      <div className="audio">
+       <button className="audio__play-button" onClick={togglePlaying}>
         {isPlaying ? (
         <>
           <span className='visually-hidden'>Pause</span>
-          <FaPause aria-hidden='true'/> 
+          <FaPauseCircle aria-hidden='true'/> 
         </>
         ) : (
         <> 
           <span className='visually-hidden'>Play</span>
-          <FaPlay aria-hidden='true'/>
+          <FaPlayCircle aria-hidden='true'/>
         </>
         )} 
       </button>
