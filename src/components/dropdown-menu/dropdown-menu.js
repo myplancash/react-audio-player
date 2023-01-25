@@ -1,45 +1,82 @@
 import React, { useState, useRef } from 'react';
 
 const DropdownMenu = ({className, buttonClass, menuClass, rates, onRatesClick, buttonText}) => {
+
+  const toggleButtonRef = useRef(null)
+  const dropdownWrapperRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false)
+  
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+    const focusElement = isOpen ?  toggleButtonRef.current : dropdownWrapperRef.current.querySelector('button')
+
+    requestAnimationFrame(() => focusElement.focus())
+  }
+
+  
+  const onOptionClicked = (rate) => {
+    setIsOpen(false)
+    onRatesClick(rate)
+  }
+
+  const escKey = 'Escape'
+  const upKey = 'ArrowUp'
+  const downKey = 'ArrowDown'
+  const tabKey = 'Tab'
+
+
+
+  const onOptionKeydown = (e, i) => {
+    const optionsNodeList = dropdownWrapperRef.current.querySelectorAll('button');
+    switch (e.key) {
+      case upKey:
+        break;
+      case tabKey: 
+       setIsOpen(false)
+       break
+      case downKey:
+        if(i === optionsNodeList.length - 1) {
+          optionsNodeList[0].focus()
+        } else {
+          optionsNodeList[i + 1].focus()
+        }
+        break
+      case escKey: 
+       setIsOpen(false)
+       break
+      default:
+        break;
+    } 
+  }
+
+
+  return (
+    <>
+      <div className={className}>
+        <button ref={toggleButtonRef} className={buttonClass} onClick={toggleMenu}>
+          {buttonText}
+        </button>
+        <div ref={dropdownWrapperRef} className={isOpen ? `${menuClass} open` : menuClass }>
+          {rates.map((rate, i) => (
+            <button 
+              key={i} 
+              tabIndex={-1}
+              onClick={() => onOptionClicked(rate)}
+              onKeyDown={(e) => onOptionKeydown(e, i)}
+              >
+                {rate}x
+            </button>
+            ))}
+        </div>
+      </div>
+    </>
+  )
   // Create a state to open and close menu
   // need to be able to send focus to various places
   //a. to button upon close
   //b. to other menu items upon arrow keys
   //c. navigate focus in menu through arrow keys not TAB
-  const buttonToggleRef = useRef(null)
-  const dropdownWrapperRef = useRef(null)
-  const [ isOpen, setIsOpen ] = useState(false)
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen)
-  }
-  const handleRateClick = (rate) => {
-    onRatesClick(rate)
-  }
-
-  return (
-    <div className={className}>
-      <button 
-        ref={buttonToggleRef} 
-        onClick={toggleMenu}
-        className={buttonClass}
-      >
-        {buttonText}
-      </button>
-      <div ref={dropdownWrapperRef} className={isOpen ? `${menuClass} open` : menuClass}>
-        {rates.map((rate, i) => (
-          <button 
-            key={i} 
-            tabIndex={-1}
-            onClick={() => handleRateClick(rate)}
-            onKeyDown={() => {}}  
-          >
-            {rate}x
-          </button>
-        ))}
-      </div>
-    </div>
-  )
 }
 
 export default DropdownMenu

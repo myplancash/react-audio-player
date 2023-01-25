@@ -24,8 +24,7 @@ const AudioPlayer = ({src, transcript}) => {
   const [mediaTime, setMediaTime] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(1)
-  const [playbackRate, setPlaybackRate] = useState(1)
-  
+  const [ playbackRate, setPlaybackRate] = useState(1)
 
   // Create a play button that toggles play and pause
   const togglePlaying = () => {
