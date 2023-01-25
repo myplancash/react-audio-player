@@ -1,10 +1,14 @@
 import React, { useState, useRef } from 'react';
+import uniqid from "uniqid";
+
 
 const DropdownMenu = ({className, buttonClass, menuClass, rates, onRatesClick, buttonText}) => {
 
   const toggleButtonRef = useRef(null)
   const dropdownWrapperRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const menuButtonId = uniqid("menu-");
+  const dropdownId = uniqid("dropdown-");
   
 
   const toggleMenu = () => {
@@ -31,6 +35,11 @@ const DropdownMenu = ({className, buttonClass, menuClass, rates, onRatesClick, b
     const optionsNodeList = dropdownWrapperRef.current.querySelectorAll('button');
     switch (e.key) {
       case upKey:
+        if(i === 0) {
+          optionsNodeList[optionsNodeList.length - 1].focus()
+        } else {
+          optionsNodeList[i - 1].focus()
+        }
         break;
       case tabKey: 
        setIsOpen(false)
@@ -44,6 +53,7 @@ const DropdownMenu = ({className, buttonClass, menuClass, rates, onRatesClick, b
         break
       case escKey: 
        setIsOpen(false)
+       toggleButtonRef.current.focus();
        break
       default:
         break;
@@ -54,13 +64,28 @@ const DropdownMenu = ({className, buttonClass, menuClass, rates, onRatesClick, b
   return (
     <>
       <div className={className}>
-        <button ref={toggleButtonRef} className={buttonClass} onClick={toggleMenu}>
+        <button 
+          ref={toggleButtonRef} 
+          className={buttonClass} 
+          onClick={toggleMenu}
+          aria-haspopup="true"
+          aria-expanded={isOpen ? "true" : undefined}
+          aria-controls={dropdownId}/*  this element controls the element with this id */
+          id={menuButtonId}
+        >
           {buttonText}
         </button>
-        <div ref={dropdownWrapperRef} className={isOpen ? `${menuClass} open` : menuClass }>
+        <div 
+          ref={dropdownWrapperRef} 
+          aria-labelledby={menuButtonId}
+          role='menu'
+          id={dropdownId}
+          className={isOpen ? `${menuClass} open` : menuClass }
+        >
           {rates.map((rate, i) => (
             <button 
               key={i} 
+              role="menuitem"
               tabIndex={-1}
               onClick={() => onOptionClicked(rate)}
               onKeyDown={(e) => onOptionKeydown(e, i)}

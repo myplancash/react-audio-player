@@ -172,18 +172,15 @@ const AudioPlayer = ({src, transcript}) => {
       <input id='volume-scrubber' type="range" step={0.1} min={0} max={1} value={isMuted ? 0 : volume} onChange={onVolumeScrubberChange} />
     </div>
       <audio
+        ref={audioRef}
         onLoadedMetadata={onLoadedMetadata}
         onTimeUpdate={onTimeUpdate}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        ref={audioRef}
         onVolumeChange={onVolumeChange}
-        src={src} 
-        controls
+        src={src}
       />
-        
       <div>{transcript}</div>
-      
     </>
   )
 }
