@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, forwardRef } from 'react';
 import {
   FaPlayCircle,
   FaPauseCircle,
@@ -11,52 +11,55 @@ import {
 import { formatTime, formatHumanReadTime } from '../../helpers/formatTime';
 import DropdownMenu from '../dropdown-menu/dropdown-menu';
 import './audio-player.css';
-const AudioPlayer = ({src, transcript}) => {  
+
+const AudioPlayer = forwardRef((props, ref) => {   
+
+  const {src, transcript} = props;
   // Create a fast-forward and rewind 15 seconds button
   // create a scrubber
   // create a playback rate button
   // volume slider
   // mute toggle
-  const audioRef = useRef(null)
+  
   const [isPlaying, setIsPlaying] = useState(false);
   // Create an elapse time and total time
   const [duration, setDuration] = useState(0)
   const [mediaTime, setMediaTime] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(1)
-  const [ playbackRate, setPlaybackRate] = useState(1)
+  const [playbackRate, setPlaybackRate] = useState(1)
 
   // Create a play button that toggles play and pause
   const togglePlaying = () => {
     setIsPlaying(!isPlaying)
-    isPlaying ? audioRef.current.pause() : audioRef.current.play()
+    isPlaying ? ref.current.pause() : ref.current.play()
   }
 
   const onLoadedMetadata = () => {
-    setDuration(audioRef.current.duration);
+    setDuration(ref.current.duration);
   }
 
   const onTimeUpdate = () => {
-    setMediaTime(audioRef.current.currentTime)
+    setMediaTime(ref.current.currentTime)
   }
 
   const onScrubberChange = (e) => {
     const newTime = e.target.value
     setMediaTime(newTime)
-    audioRef.current.currentTime = newTime
+    ref.current.currentTime = newTime
   }
   const onRewind = () => {
-    const { currentTime } = audioRef.current;
+    const { currentTime } = ref.current;
     const newTime = Math.max(currentTime - 15,  0);
     setMediaTime(newTime)
-    audioRef.current.currentTime = newTime;
+    ref.current.currentTime = newTime;
   }
 
    const onFastForward = () => {
-    const { currentTime } = audioRef.current;
+    const { currentTime } = ref.current;
     const newTime = Math.min(currentTime + 15,  duration) ;
     setMediaTime(newTime)
-    audioRef.current.currentTime = newTime;
+    ref.current.currentTime = newTime;
   }
 
   const rates = [0.75, 1, 1.5, 2];
@@ -64,21 +67,21 @@ const AudioPlayer = ({src, transcript}) => {
 
   const changeRate = (rate) => {
     setPlaybackRate(rate)
-    audioRef.current.playbackRate = rate
+    ref.current.playbackRate = rate
   }
 
-  console.log(audioRef);
+
   const onMuted = () => {
     setIsMuted(!isMuted)
-    audioRef.current.muted = !isMuted
+    ref.current.muted = !isMuted
   }
 
   const onVolumeChange = () => {
-    if(audioRef.current.muted || audioRef.current.volume === 0) {
+    if(ref.current.muted || ref.current.volume === 0) {
       setIsMuted(true)
-    } else if (!audioRef.current.muted) {
+    } else if (!ref.current.muted) {
       setIsMuted(false)
-      setVolume(audioRef.current.volume)
+      setVolume(ref.current.volume)
     }
   }
 
@@ -86,7 +89,7 @@ const AudioPlayer = ({src, transcript}) => {
     //to be more safe we set Number on whatever is the value:
     const newVolume = Number(event.target.value);
     setVolume(newVolume)
-    audioRef.current.volume = newVolume 
+    ref.current.volume = newVolume 
   }
   
   const buttonText = (
@@ -172,7 +175,7 @@ const AudioPlayer = ({src, transcript}) => {
       <input id='volume-scrubber' type="range" step={0.1} min={0} max={1} value={isMuted ? 0 : volume} onChange={onVolumeScrubberChange} />
     </div>
       <audio
-        ref={audioRef}
+        ref={ref}
         onLoadedMetadata={onLoadedMetadata}
         onTimeUpdate={onTimeUpdate}
         onPlay={() => setIsPlaying(true)}
@@ -183,6 +186,6 @@ const AudioPlayer = ({src, transcript}) => {
       <div>{transcript}</div>
     </>
   )
-}
+})
 
 export default AudioPlayer
